@@ -26,8 +26,11 @@ async fn main() -> io::Result<()> {
       .configure(general_routes)
   };
 
-  let port = env::var("PORT").unwrap();
+  let host = env::var("HOST").expect("Host not set");
+  let port = env::var("PORT").expect("Port not set");
 
-  let server_url = format!("0.0.0.0:{}", port);
-  HttpServer::new(app).bind(server_url)?.run().await
+  HttpServer::new(app)
+    .bind(format!("{}:{}", host, port))?
+    .run()
+    .await
 }
