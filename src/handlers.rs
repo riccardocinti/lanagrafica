@@ -20,7 +20,6 @@ mod tests {
     let app_state: web::Data<AppState> = web::Data::new(AppState {
       health_check_response: "".to_string(),
       visit_count: Mutex::new(0),
-      courses: Mutex::new(vec![]),
     });
 
     let resp = health_check_handler(app_state).await;
