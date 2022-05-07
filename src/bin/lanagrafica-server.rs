@@ -1,4 +1,5 @@
 use actix_web::{web, App, HttpServer};
+use std::env;
 use std::io;
 use std::sync::Mutex;
 
@@ -25,5 +26,8 @@ async fn main() -> io::Result<()> {
       .configure(general_routes)
   };
 
-  HttpServer::new(app).bind("127.0.0.1:8080")?.run().await
+  let port = env::var("PORT").unwrap();
+
+  let server_url = format!("0.0.0.0:{}", port);
+  HttpServer::new(app).bind(server_url)?.run().await
 }
