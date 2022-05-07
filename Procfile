@@ -1,1 +1,1 @@
-web: ./target/release/lanagrafica
+web: ./target/release/lanagrafica-server
