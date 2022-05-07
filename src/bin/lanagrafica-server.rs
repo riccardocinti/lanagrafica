@@ -26,11 +26,10 @@ async fn main() -> io::Result<()> {
       .configure(general_routes)
   };
 
-  let host = env::var("HOST").expect("Host not set");
-  let port = env::var("PORT").expect("Port not set");
+  let port = env::var("PORT")
+    .unwrap_or_else(|_| "3000".to_string())
+    .parse()
+    .expect("PORT must be a number");
 
-  HttpServer::new(app)
-    .bind(format!("{}:{}", host, port))?
-    .run()
-    .await
+  HttpServer::new(app).bind(("0.0.0.0", port))?.run().await
 }
