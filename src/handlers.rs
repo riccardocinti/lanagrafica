@@ -1,3 +1,4 @@
+use super::errors::AppError;
 use super::models::AspAssociate;
 use super::state::AppState;
 use actix_web::{web, HttpResponse};
@@ -15,7 +16,7 @@ pub async fn health_check_handler(app_state: web::Data<AppState>) -> HttpRespons
 pub async fn new_asp_associate(
   app_state: web::Data<AppState>,
   asp_associate_json: web::Json<AspAssociate>,
-) -> HttpResponse {
+) -> Result<HttpResponse, AppError> {
   println!("Received a new asp associate");
 
   let asp_associate = AspAssociate {
@@ -32,10 +33,12 @@ pub async fn new_asp_associate(
     .unwrap()
     .insert(asp_associate_store_id.to_string(), asp_associate);
 
-  HttpResponse::Ok().json("Added new aspirant associate")
+  Ok(HttpResponse::Ok().json("Added new aspirant associate"))
 }
 
-pub async fn get_all_asp_associates(app_state: web::Data<AppState>) -> HttpResponse {
+pub async fn get_all_asp_associates(
+  app_state: web::Data<AppState>,
+) -> Result<HttpResponse, AppError> {
   let all_asp_associates: Vec<AspAssociate> = app_state
     .asp_associates
     .lock()
@@ -43,7 +46,10 @@ pub async fn get_all_asp_associates(app_state: web::Data<AppState>) -> HttpRespo
     .clone()
     .into_values()
     .collect();
-  HttpResponse::Ok().json(all_asp_associates)
+  match all_asp_associates.len() {
+    0 => Err(AppError::NotFound("Aspirant associates not found".into())),
+    _ => Ok(HttpResponse::Ok().json(all_asp_associates)),
+  }
 }
 
 #[cfg(test)]
@@ -80,7 +86,7 @@ mod tests {
       insert_date: Some(Utc::now().naive_utc()),
     });
 
-    let resp = new_asp_associate(app_state, asp_associate).await;
+    let resp = new_asp_associate(app_state, asp_associate).await.unwrap();
     assert_eq!(resp.status(), StatusCode::OK);
   }
 
@@ -101,7 +107,19 @@ mod tests {
       asp_associates: Mutex::new(asp_associates),
     });
 
-    let resp = get_all_asp_associates(app_state).await;
+    let resp = get_all_asp_associates(app_state).await.unwrap();
     assert_eq!(resp.status(), StatusCode::OK);
+  }
+
+  #[actix_rt::test]
+  #[should_panic(expected = "Aspirant associates not found")]
+  async fn get_all_asp_associates_not_found_test() {
+    let app_state: web::Data<AppState> = web::Data::new(AppState {
+      health_check_response: "".to_string(),
+      visit_count: Mutex::new(0),
+      asp_associates: Mutex::new(HashMap::new()),
+    });
+
+    get_all_asp_associates(app_state).await.unwrap();
   }
 }

@@ -31,26 +31,26 @@ impl AppError {
 impl error::ResponseError for AppError {
   fn status_code(&self) -> StatusCode {
     match self {
-      AppError::ActixError(msg) => StatusCode::INTERNAL_SERVER_ERROR,
-      AppError::NotFound(msg) => StatusCode::NOT_FOUND,
+      AppError::ActixError(_msg) => StatusCode::INTERNAL_SERVER_ERROR,
+      AppError::NotFound(_msg) => StatusCode::NOT_FOUND,
     }
   }
 
   fn error_response(&self) -> HttpResponse {
     HttpResponse::build(self.status_code()).json(AppErrorResponse {
-      error_message: self.error_response(),
+      error_msg: self.error_response(),
     })
   }
 }
 
-impl fmt::Display for EzyTutorError {
+impl fmt::Display for AppError {
   fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
     write!(f, "{}", self)
   }
 }
 
-impl From<actix_web::error::Error> for EzyTutorError {
+impl From<actix_web::error::Error> for AppError {
   fn from(err: actix_web::error::Error) -> Self {
-    EzyTutorError::ActixError(err.to_string())
+    AppError::ActixError(err.to_string())
   }
 }
