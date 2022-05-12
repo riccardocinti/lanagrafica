@@ -33,7 +33,7 @@ pub async fn new_asp_associate(
     .unwrap()
     .insert(asp_associate_store_id.to_string(), asp_associate);
 
-  Ok(HttpResponse::Ok().json("Added new aspirant associate {}", asp_associate_store_id))
+  Ok(HttpResponse::Ok().json(format!("Added new aspirant associate {}", asp_associate_store_id)))
 }
 
 pub async fn get_all_asp_associates(
