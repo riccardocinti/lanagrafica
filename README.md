@@ -1,2 +1,3 @@
 # lanagrafica
-![example workflow](https://github.com/riccardocinti/lanagrafica/actions/workflows/rust.yml/badge.svg)
+![example event parameter](https://github.com/github/docs/actions/workflows/rust.yml/badge.svg?event=push)
+
