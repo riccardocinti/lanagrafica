@@ -1,3 +1,3 @@
 # lanagrafica
-![example event parameter](https://github.com/github/docs/actions/workflows/rust.yml/badge.svg?event=push)
-
+![example workflow](https://img.shields.io/github/workflow/status/riccardocinti/lanagrafica/Rust/main)
+https://img.shields.io/github/license/riccardocinti/lanagrafica
