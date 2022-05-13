@@ -1,4 +1,4 @@
-use super::models::AspAssociate;
+use crate::models::aspassociate::AspAssociate;
 use std::collections::HashMap;
 use std::sync::Mutex;
 

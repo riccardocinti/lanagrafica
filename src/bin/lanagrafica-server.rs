@@ -4,9 +4,9 @@ use std::env;
 use std::io;
 use std::sync::Mutex;
 
-#[path = "../handlers.rs"]
+#[path = "../handlers/mod.rs"]
 mod handlers;
-#[path = "../models.rs"]
+#[path = "../models/mod.rs"]
 mod models;
 #[path = "../routes.rs"]
 mod routes;

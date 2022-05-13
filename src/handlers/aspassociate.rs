@@ -1,17 +1,9 @@
-use super::errors::AppError;
-use super::models::AspAssociate;
-use super::state::AppState;
+use crate::errors::AppError;
+use crate::models::aspassociate::AspAssociate;
+use crate::state::AppState;
 use actix_web::{web, HttpResponse};
 use chrono::Utc;
 use uuid::Uuid;
-
-pub async fn health_check_handler(app_state: web::Data<AppState>) -> HttpResponse {
-  let health_check_response = &app_state.health_check_response;
-  let mut visit_count = app_state.visit_count.lock().unwrap();
-  let response = format!("{} {} times", health_check_response, visit_count);
-  *visit_count += 1;
-  HttpResponse::Ok().json(&response)
-}
 
 pub async fn new_asp_associate(
   app_state: web::Data<AppState>,
@@ -33,7 +25,10 @@ pub async fn new_asp_associate(
     .unwrap()
     .insert(asp_associate_store_id.to_string(), asp_associate);
 
-  Ok(HttpResponse::Ok().json(format!("Added new aspirant associate {}", asp_associate_store_id)))
+  Ok(HttpResponse::Ok().json(format!(
+    "Added new aspirant associate {}",
+    asp_associate_store_id
+  )))
 }
 
 pub async fn get_all_asp_associates(

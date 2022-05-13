@@ -1,4 +1,4 @@
-use super::handlers::*;
+use crate::handlers::{aspassociate::*, general::*};
 use actix_web::web;
 
 pub fn general_routes(cfg: &mut web::ServiceConfig) {
