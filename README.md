@@ -1,3 +1,3 @@
 # lanagrafica
-![example workflow](https://img.shields.io/github/workflow/status/riccardocinti/lanagrafica/Rust/main)
-https://img.shields.io/github/license/riccardocinti/lanagrafica
+![workflow](https://img.shields.io/github/workflow/status/riccardocinti/lanagrafica/Rust/main)
+![licence](https://img.shields.io/github/license/riccardocinti/lanagrafica)
