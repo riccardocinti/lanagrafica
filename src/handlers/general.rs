@@ -8,3 +8,23 @@ pub async fn health_check_handler(app_state: web::Data<AppState>) -> HttpRespons
   *visit_count += 1;
   HttpResponse::Ok().json(&response)
 }
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+  use actix_web::http::StatusCode;
+  use std::collections::HashMap;
+  use std::sync::Mutex;
+
+  #[actix_rt::test]
+  async fn health_check_test() {
+    let app_state: web::Data<AppState> = web::Data::new(AppState {
+      health_check_response: "".to_string(),
+      visit_count: Mutex::new(0),
+      asp_associates: Mutex::new(HashMap::new()),
+    });
+
+    let resp = health_check_handler(app_state).await;
+    assert_eq!(resp.status(), StatusCode::OK);
+  }
+}
