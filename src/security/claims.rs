@@ -12,15 +12,7 @@ use std::{collections::HashSet, future::Future, pin::Pin};
 
 #[derive(Debug, Deserialize)]
 pub struct Claims {
-  permissions: Option<HashSet<String>>,
-}
-
-impl Claims {
-  pub fn validate_permissions(&self, required_permissions: &HashSet<String>) -> bool {
-    self.permissions.as_ref().map_or(false, |permissions| {
-      permissions.is_superset(required_permissions)
-    })
-  }
+  pub _permissions: Option<HashSet<String>>,
 }
 
 impl FromRequest for Claims {
@@ -68,7 +60,7 @@ impl FromRequest for Claims {
           let token = decode::<Claims>(token, &key, &validation).unwrap();
           Ok(token.claims)
         }
-        algorithm => Err(AppError::ActixError("Unsupported algorithm error".to_string()).into()),
+        _algorithm => Err(AppError::ActixError("Unsupported algorithm error".to_string()).into()),
       }
     })
   }

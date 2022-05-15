@@ -1,10 +1,7 @@
 use actix_web::{error, http::StatusCode, HttpResponse, Result};
 use actix_web_httpauth::headers::www_authenticate::bearer::Bearer;
-use serde::Serialize;
+use serde::{Serialize, Serializer};
 use std::fmt;
-use std::fmt::Display;
-use serde::Serializer;
-
 
 #[derive(Debug, Serialize)]
 pub enum AppError {
@@ -46,9 +43,6 @@ impl error::ResponseError for AppError {
 
   fn error_response(&self) -> HttpResponse {
     match self {
-      Self::Authentication(_) => HttpResponse::Unauthorized().json(AppErrorResponse {
-        error_msg: "Requires authentication".to_string(),
-      }),
       _ => HttpResponse::build(self.status_code()).json(AppErrorResponse {
         error_msg: self.error_response(),
       }),
@@ -70,7 +64,7 @@ impl From<actix_web::error::Error> for AppError {
 
 fn use_display<T, S>(value: &T, serializer: S) -> Result<S::Ok, S::Error>
 where
-  T: Display,
+  T: fmt::Display,
   S: Serializer,
 {
   serializer.collect_str(value)
