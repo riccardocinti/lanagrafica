@@ -4,16 +4,18 @@ use std::env;
 use std::io;
 use std::sync::Mutex;
 
+#[path = "../errors.rs"]
+mod errors;
 #[path = "../handlers/mod.rs"]
 mod handlers;
 #[path = "../models/mod.rs"]
 mod models;
 #[path = "../routes.rs"]
 mod routes;
+#[path = "../security/mod.rs"]
+mod security;
 #[path = "../state.rs"]
 mod state;
-#[path = "../errors.rs"]
-mod errors;
 
 use routes::*;
 use state::AppState;
