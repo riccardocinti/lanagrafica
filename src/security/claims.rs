@@ -1,5 +1,6 @@
 use crate::errors::AppError;
-use actix_web::{client::Client, http::Uri, Error, FromRequest};
+use crate::state::AppState;
+use actix_web::{client::Client, http::Uri, web::Data, Error, FromRequest};
 use actix_web_httpauth::extractors::bearer::BearerAuth;
 use jsonwebtoken::{
   decode, decode_header,
@@ -8,20 +9,6 @@ use jsonwebtoken::{
 };
 use serde::Deserialize;
 use std::{collections::HashSet, future::Future, pin::Pin};
-
-#[derive(Clone, Deserialize)]
-pub struct Auth0Config {
-  audience: String,
-  domain: String,
-}
-
-impl Default for Auth0Config {
-  fn default() -> Self {
-    envy::prefixed("AUTH0_")
-      .from_env()
-      .expect("Provide missing environment variables for Auth0Client")
-  }
-}
 
 #[derive(Debug, Deserialize)]
 pub struct Claims {
@@ -45,10 +32,10 @@ impl FromRequest for Claims {
     req: &actix_web::HttpRequest,
     _payload: &mut actix_web::dev::Payload,
   ) -> Self::Future {
-    let config = req.app_data::<Auth0Config>().unwrap().clone();
+    let config = req.app_data::<Data<AppState>>().unwrap().clone();
     let extractor = BearerAuth::extract(req);
     Box::pin(async move {
-      let credentials = extractor.await.unwrap();
+      let credentials = extractor.await.map_err(AppError::Authentication)?;
       let token = credentials.token();
       let header = decode_header(token).unwrap();
       let kid = header.kid.unwrap();
@@ -70,7 +57,7 @@ impl FromRequest for Claims {
       match jwk.clone().algorithm {
         AlgorithmParameters::RSA(ref rsa) => {
           let mut validation = Validation::new(Algorithm::RS256);
-          validation.set_audience(&[config.audience]);
+          validation.set_audience(&[config.audience.clone()]);
           validation.set_issuer(&[Uri::builder()
             .scheme("https")
             .authority(domain)

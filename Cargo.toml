@@ -7,7 +7,7 @@ edition = "2021"
 name = "lanagrafica-server"
 
 [dependencies]
-actix-web = "3.1.0"
+actix-web = { version = "^3.3.2" , features = ["rustls"] }
 actix-rt = "1.1.1"
 serde = { version = "1.0.110", features = ["derive"] }
 chrono = {version = "0.4.11", features = ["serde"]}
@@ -15,4 +15,4 @@ uuid = {version = "1.0.0", features = ["v4"]}
 actix-web-httpauth = "^0.5.1"
 derive_more = "^0.99.16"
 jsonwebtoken = "^8.0.0-beta.6"
-envy = "^0.4.2"
+dotenv = "0.15.0"

@@ -1,5 +1,6 @@
 use crate::errors::AppError;
 use crate::models::aspassociate::AspAssociate;
+use crate::security::claims::Claims;
 use crate::state::AppState;
 use actix_web::{web, HttpResponse};
 use chrono::Utc;
@@ -8,6 +9,7 @@ use uuid::Uuid;
 pub async fn new_asp_associate(
   app_state: web::Data<AppState>,
   asp_associate_json: web::Json<AspAssociate>,
+  _claims: Claims,
 ) -> Result<HttpResponse, AppError> {
   println!("Received a new asp associate");
 
