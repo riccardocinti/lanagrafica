@@ -1,28 +1,34 @@
 use actix_web::{web, App, HttpServer};
+use dotenv::dotenv;
 use std::collections::HashMap;
 use std::env;
 use std::io;
 use std::sync::Mutex;
 
+#[path = "../errors.rs"]
+mod errors;
 #[path = "../handlers/mod.rs"]
 mod handlers;
 #[path = "../models/mod.rs"]
 mod models;
 #[path = "../routes.rs"]
 mod routes;
+#[path = "../security/mod.rs"]
+mod security;
 #[path = "../state.rs"]
 mod state;
-#[path = "../errors.rs"]
-mod errors;
 
 use routes::*;
 use state::AppState;
 
 #[actix_rt::main]
 async fn main() -> io::Result<()> {
+  dotenv().ok();
+
   let shared_data = web::Data::new(AppState {
-    health_check_response: "I'm good. You've already asked me ".to_string(),
-    visit_count: Mutex::new(0),
+    audience: env::var("AUTH0_AUDIENCE").unwrap(),
+    domain: env::var("AUTH0_DOMAIN").unwrap(),
+    health_check_response: "UP".to_string(),
     asp_associates: Mutex::new(HashMap::new()),
   });
 
