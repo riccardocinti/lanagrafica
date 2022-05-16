@@ -3,9 +3,7 @@ use actix_web::{web, HttpResponse};
 
 pub async fn health_check_handler(app_state: web::Data<AppState>) -> HttpResponse {
   let health_check_response = &app_state.health_check_response;
-  let mut visit_count = app_state.visit_count.lock().unwrap();
-  let response = format!("{} {} times", health_check_response, visit_count);
-  *visit_count += 1;
+  let response = format!("{}", health_check_response);
   HttpResponse::Ok().json(&response)
 }
 
@@ -22,7 +20,6 @@ mod tests {
       audience: "".to_string(),
       domain: "".to_string(),
       health_check_response: "".to_string(),
-      visit_count: Mutex::new(0),
       asp_associates: Mutex::new(HashMap::new()),
     });
 
