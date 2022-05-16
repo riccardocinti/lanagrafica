@@ -18,12 +18,14 @@ mod security;
 #[path = "../state.rs"]
 mod state;
 
+use actix_web::middleware::Logger;
 use routes::*;
 use state::AppState;
 
 #[actix_rt::main]
 async fn main() -> io::Result<()> {
   dotenv().ok();
+  env_logger::init();
 
   let shared_data = web::Data::new(AppState {
     audience: env::var("AUTH0_AUDIENCE").unwrap(),
@@ -34,6 +36,7 @@ async fn main() -> io::Result<()> {
 
   let app = move || {
     App::new()
+      .wrap(Logger::default())
       .app_data(shared_data.clone())
       .configure(general_routes)
       .configure(aspirant_associate_routes)

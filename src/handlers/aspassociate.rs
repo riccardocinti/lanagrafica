@@ -11,7 +11,7 @@ pub async fn new_asp_associate(
   asp_associate_json: web::Json<AspAssociate>,
   _claims: Claims,
 ) -> Result<HttpResponse, AppError> {
-  println!("Received a new asp associate");
+  log::info!("Received a new asp associate {:?}", asp_associate_json);
 
   let asp_associate = AspAssociate {
     name: asp_associate_json.name.clone(),
