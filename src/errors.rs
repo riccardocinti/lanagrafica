@@ -9,6 +9,8 @@ pub enum AppError {
   NotFound(String),
   #[serde(serialize_with = "use_display")]
   Authentication(actix_web_httpauth::extractors::AuthenticationError<Bearer>),
+  #[serde(serialize_with = "use_display")]
+  Decode(jsonwebtoken::errors::Error),
 }
 
 #[derive(Debug, Serialize)]
@@ -20,14 +22,21 @@ impl AppError {
   fn error_response(&self) -> String {
     match self {
       AppError::ActixError(msg) => {
-        println!("Server error occurred: {:?}", msg);
+        log::error!("Internal server error: {}", msg);
         "Internal server error".into()
       }
       AppError::NotFound(msg) => {
-        println!("Not found error occurred: {:?}", msg);
+        log::error!("Resource not found: {}", msg);
         msg.into()
       }
-      AppError::Authentication(_) => "Requires authentication".to_string(),
+      AppError::Authentication(msg) => {
+        log::error!("Missing authentication error: {}", msg);
+        "Requires authentication".to_string()
+      }
+      AppError::Decode(msg) => {
+        log::error!("Authorization header error: {}", msg);
+        "Authorization header value must follow this format: Bearer access-token".to_string()
+      }
     }
   }
 }
@@ -38,6 +47,7 @@ impl error::ResponseError for AppError {
       AppError::ActixError(_msg) => StatusCode::INTERNAL_SERVER_ERROR,
       AppError::NotFound(_msg) => StatusCode::NOT_FOUND,
       AppError::Authentication(_) => StatusCode::UNAUTHORIZED,
+      AppError::Decode(_) => StatusCode::UNAUTHORIZED,
     }
   }
 
