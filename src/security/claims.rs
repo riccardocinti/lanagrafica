@@ -29,7 +29,7 @@ impl FromRequest for Claims {
     Box::pin(async move {
       let credentials = extractor.await.map_err(AppError::Authentication)?;
       let token = credentials.token();
-      let header = decode_header(token).unwrap();
+      let header = decode_header(token).map_err(AppError::Decode)?;
       let kid = header.kid.unwrap();
       let domain = config.domain.as_str();
       let jwks: JwkSet = Client::new()
@@ -56,8 +56,8 @@ impl FromRequest for Claims {
             .path_and_query("/")
             .build()
             .unwrap()]);
-          let key = DecodingKey::from_rsa_components(&rsa.n, &rsa.e).unwrap();
-          let token = decode::<Claims>(token, &key, &validation).unwrap();
+          let key = DecodingKey::from_rsa_components(&rsa.n, &rsa.e).map_err(AppError::Decode)?;
+          let token = decode::<Claims>(token, &key, &validation).map_err(AppError::Decode)?;
           Ok(token.claims)
         }
         _algorithm => Err(AppError::ActixError("Unsupported algorithm error".to_string()).into()),
